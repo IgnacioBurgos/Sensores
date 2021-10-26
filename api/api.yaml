@@ -1,0 +1,585 @@
+---
+swagger: "3.0.0"
+info:
+  description: Esto es una Api para proyecto Sensores
+  version: 1.0.0
+  title: Sensores API
+  contact:
+    email: iburgos@outlook.cl
+basePath: /Ignacio123/citra-api/1.0.0
+
+# tags are used for organizing operations
+tags:
+- name: profile
+  description: end points para visualización de la información de gráficos asociados al usuario
+- name: login
+  description: acceso individual para obtención de credenciales para navegar en el sistema
+- name: recovery
+  description: end points para la recuperación de contraseña de un usuario
+- name: users
+  description: end points para el CRUD de usuarios, solo accesible para ADMINISTRADOR
+- name: component
+  description: end points para el CRUD de un componente para un usuario en particular,  solo accesible para ADMINISTRADOR
+- name: sector
+  description: end points para el CRUD de un sector que contendrá componentes,  solo accesible para ADMINISTRADOR
+
+schemes:
+- https
+paths:
+  /api/v1/profile/my-sectors:
+    get:
+      tags:
+      - profile
+      security:
+        - bearerAuth: []
+      summary: búsqueda de los sectores
+      description:
+        el end-point provee de todos los sectores asignados a un usuario
+      produces:
+      - application/json
+      responses:
+        "200":
+          description:
+            resultado exitoso, muestra todos los sectores asociados a un usuario
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido
+
+  /api/v1/profile/my-components/{id}:
+    get:
+      tags:
+      - profile
+      security:
+        - bearerAuth: []
+      summary: búsqueda de los componentes
+      description:
+        el end-point provee de todos los componentes asignados a un usuario
+      parameters:
+      - name: id
+        in: path
+        description: Se debe ingresar el id del Sector seleccioando
+        required: true
+        explode: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description:
+            resultado exitoso, muestra todos los componentes asociados a un usuario
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido
+
+  /api/v1/profile/my-graphics/{nombreSensor}:
+    get:
+      tags:
+      - profile
+      security:
+        - bearerAuth: []
+      summary: búsqueda de las gráficas asociadas a un sensor
+      description:
+        el end-point provee todas las gráficas asociadas a un sensor en particular
+      parameters:
+      - name: nombreSensor
+        in: path
+        description: Se debe ingresar el nombre del sensor seleccioando
+        required: true
+        explode: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description:
+            resultado exitoso, muestra todos las gráficas asociadas al sensor
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido
+
+  /api/v1/profile/my-historial/{nombreSensor}:
+    get:
+      tags:
+      - profile
+      security:
+        - bearerAuth: []
+      summary: búsqueda del historial
+      description:
+        el end-point provee todo el historial de valores asociado a un sensor
+      parameters:
+      - name: nombreSensor
+        in: path
+        description: Se debe ingresar el nombre del sensor seleccioando
+        required: true
+        explode: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description:
+            resultado exitoso, muestra todo el historial de valores asociados al sensor
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido
+
+  /api/v1/auth/login:
+    post:
+      tags:
+        - login
+      summary: ingreso al sistema mediante las credenciales del correo y la contraseña
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        "200":
+          description:
+            resultado exitoso, devuelve las credenciales de acceso del usuario logeado
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado debido a que sus credenciales no son correctas
+
+  /api/v1/auth/change-password:
+    post:
+      tags:
+        - recovery
+      summary: cambio de la contraseña del usuario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoveryPassword'
+      responses:
+        "200":
+          description:
+            resultado exitoso, la contraseña ha sido cambiada exitosamente
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado o el token ha espirado
+  /api/v1/auth/recovery:
+    post:
+      tags:
+        - recovery
+      summary: envío del email al correo del usuario para enviar el token con el cual podrá cambiar su contraseña
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recovery'
+      responses:
+        "200":
+          description:
+            email enviado, por favor revise su correo electrónico
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado o el correo no está en la base de datos
+
+  /api/v1/users:
+    get:
+      tags:
+      - users
+      security:
+        - bearerAuth: []
+      summary: búsqueda de los usuarios registrados en el sistema
+      description:
+        el end-point provee de todos los usuarios con sus credenciales
+      produces:
+      - application/json
+      responses:
+        "200":
+          description:
+            resultado exitoso, muestra todos los usuarios del sistema
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido o no es Administrador
+
+    post:
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      summary: Agregar un nuevo usuario al sistema
+      description:
+        el end-point creará un nuevo usuario en el sistema
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUser'
+      responses:
+        "200":
+          description:
+            Usuario agreado exitosamente
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido o no es Administrador
+  /api/v1/users/{id}:
+    put:
+      tags:
+      - users
+      security:
+        - bearerAuth: []
+      summary: Modificar datos de un usuario registrado
+      description:
+        el end-point modificará datos de un usuario en particular mediante su identificador
+      parameters:
+      - name: id
+        in: path
+        description: Se debe ingresar el id del usuario a modificar
+        required: true
+        explode: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+      responses:
+        "200":
+          description:
+            modificación de datos en el usario exitosa
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido o no es Administrador
+        "409":
+          description:
+            No se pueden tener dos usuarios con el mismo correo electrónico
+
+  /api/v1/component:
+    post:
+      tags:
+        - component
+      security:
+        - bearerAuth: []
+      summary: Agregar un nuevo componente
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddComponent'
+      responses:
+        "200":
+          description:
+            resultado exitoso, el componente ha sido agregado correctamente
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido o no es Administrador
+        "409":
+          description:
+            No se pueden tener dos componentes con el mismo nombre
+
+  /api/v1/component/{id}:
+    get:
+        tags:
+        - component
+        security:
+          - bearerAuth: []
+        summary: búsqueda de componentes por sector
+        description:
+          el end-point provee todos los datos de los componentes asociados a un sector en particular
+        produces:
+        - application/json
+        responses:
+          "200":
+            description:
+              resultado exitoso, muestra todos los sectores
+            schema:
+              type: array
+          "400":
+            description:
+              Parámetros mal ingresados
+          "401":
+            description:
+              No se encuentra autorizado ya que su token no es válido o no es Administrador
+
+  /api/v1/component/{nombreComponente}:
+    put:
+      tags:
+      - component
+      security:
+        - bearerAuth: []
+      summary: Modificar datos de un componente en particular
+      description:
+        el end-point modificará datos de un componente asociado a un usuario del sistema
+      parameters:
+      - name: nombreComponente
+        in: path
+        description: Se debe ingresar el nombre del componente a modificar
+        required: true
+        explode: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateComponent'
+      responses:
+        "200":
+          description:
+            modificación de componente exitosa
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido o no es Administrador
+        "409":
+          description:
+            No se pueden tener dos componentes con el mismo nombre
+
+  /api/v1/sector:
+    post:
+      tags:
+        - sector
+      security:
+        - bearerAuth: []
+      summary: Agregar un nuevo sector
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddSector'
+      responses:
+        "200":
+          description:
+            resultado exitoso, el sector ha sido agregado correctamente
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido o no es Administrador
+        "409":
+          description:
+            No se pueden tener dos sectores con el mismo nombre
+    get:
+      tags:
+      - sector
+      security:
+        - bearerAuth: []
+      summary: búsqueda de los sectores en el sistema
+      description:
+        el end-point provee una lista con todos los sectores creados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description:
+            resultado exitoso, muestra todos los sectores asociados a un usuario
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido o no es Administrador
+
+  /api/v1/sector/{id}:
+    put:
+      tags:
+      - sector
+      security:
+        - bearerAuth: []
+      summary: Modificar el nombre de un sector en particular
+      description:
+        el end-point modificará el nombre de un sector en particular
+      parameters:
+      - name: id
+        in: path
+        description: Se debe ingresar el id del sector a modificar
+        required: true
+        explode: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSector'
+      responses:
+        "200":
+          description:
+            modificación de sector exitosa
+          schema:
+            type: array
+        "400":
+          description:
+            Parámetros mal ingresados
+        "401":
+          description:
+            No se encuentra autorizado ya que su token no es válido o no es Administrador
+        "409":
+          description:
+            No se pueden tener dos sectores con el mismo nombre
+
+
+components:
+  schemas:
+    Login:
+      type: object
+      properties:
+        email:
+          type: string
+          description: correo electronico del cliente
+          example: pedro@gmail.com
+        password:
+          type: string
+          description: contraseña del cliente
+          example: pedro12345678
+    RecoveryPassword:
+      type: object
+      properties:
+        token:
+          type: string
+          description: token de recuperación que es enviado al correo electrónico
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImlhdCI6MTYzNTEyMTI4MCwiZXhwIjoxNjM1MTIyMTgwfQ.ofmteiIr0fnn2sM3HLCP08mxwngMC1LzbeSqOVyj8u8
+        newPassword:
+          type: string
+          description: nueva contraseña
+          example: 131n2qjdosi1
+    Recovery:
+      type: object
+      properties:
+        email:
+          type: string
+          description: correo electrónico del usuario
+          example: pedrito@gmail.com
+    AddUser:
+      type: object
+      properties:
+        email:
+          type: string
+          description: correo electrónico del usuario
+          example: jorge@gmail.com
+          required: true
+        password:
+          type: string
+          description: contraseña del usuario
+          example: 123qjsadQAre12
+          required: true
+        role:
+          type: string
+          description: rol del usuario, no es requerido, por defecto será cliente
+          example: customer
+    UpdateUser:
+      type: object
+      properties:
+        email:
+          type: string
+          description: nuevo correo electrónico del usuario
+          example: jorge@outlook.cl
+        role:
+          type: string
+          description: rol de usuario, cambiar privilegios a un usuario registrado previamente
+          example: admin
+    AddComponent:
+      type: object
+      properties:
+        email:
+          type: string
+          description: corre del usuario a quien será asignado el sensor
+          required: true
+          example: jorge@gmail.com
+        sector:
+          type: string
+          description: nombre del sector donde será agregado el componente
+          required: true
+          example: nave 50
+        tipoCultivo:
+          type: string
+          description: nombre del tipo de cultivo que se medirá en el componente
+          required: true
+          example: lechuga
+        nombreComponente:
+          type: string
+          description: nombre para identificar el componente de los demás
+          required: true
+          example: sensor 20
+    UpdateComponent:
+      type: object
+      properties:
+        tipoCultivo:
+          type: string
+          description: se puede modificar el tipo de cultivo asociado a un sensor
+          example: lechuga
+        nombreComponente:
+          type: string
+          description: se puede modificar el nombre del componente asociado a un sensor
+          example: sensor 20
+    AddSector:
+      type: object
+      properties:
+        nombreSector:
+          type: string
+          description: nombre que tendrá el sector a crear
+          example: nave 50
+    UpdateSector:
+      type: object
+      properties:
+        nombreSector:
+          type: string
+          description: se puede modificar el nombre del sector donde se guardan componentes
+          example: nave 100
+
+
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+
