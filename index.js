@@ -16,11 +16,6 @@ const optionsSpec = {
         email: "iburgos@outlook.cl"
       }
     },
-    servers: [
-      {
-        url: "http://localhost:3000"
-      }
-    ],
   },
   apis: ["./api/api.yaml"]
 }
