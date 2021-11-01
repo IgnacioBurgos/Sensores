@@ -66,5 +66,4 @@ class Historial extends Model {
   }
 }
 
-
 module.exports = { Historial, HistorialSchema, HISTORIAL_TABLE };

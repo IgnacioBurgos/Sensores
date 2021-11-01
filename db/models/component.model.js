@@ -62,12 +62,13 @@ class Component extends Model {
       foreignKey: 'componentId',
       otherKey: 'sensorId'
     });
-    this.belongsToMany(models.Historial, {
+    /*this.belongsToMany(models.Historial, {
       as: 'items-historial',
       through: models.ComponentHistorial,
       foreignKey: 'componentId',
       otherKey: 'historialId'
     })
+    */
   }
 
   static config(sequelize) {

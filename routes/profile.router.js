@@ -1,5 +1,6 @@
 const express = require('express');
 const passport = require('passport');
+const { checkRoles } = require('../middlewares/auth.handler');
 
 const ComponentService = require('../services/component.service');
 
@@ -9,6 +10,7 @@ const service = new ComponentService();
 
 router.get('/my-components/:sectorId',
   passport.authenticate('jwt', {session: false}),
+  checkRoles('admin','customer'),
   async (req, res, next) => {
     try {
       const user = req.user;
@@ -23,6 +25,7 @@ router.get('/my-components/:sectorId',
 
 router.get('/my-sectors',
   passport.authenticate('jwt', {session: false}),
+  checkRoles('admin','customer'),
   async (req, res, next) => {
     try {
       const user = req.user;
@@ -34,7 +37,6 @@ router.get('/my-sectors',
   }
 );
 
-// esa esta buena
 router.get('/my-graphics/:nombreSensor',
   passport.authenticate('jwt', {session: false}),
   async (req, res, next) => {
@@ -49,14 +51,13 @@ router.get('/my-graphics/:nombreSensor',
   }
 );
 
-
 router.get('/my-historial/:nombreSensor',
   passport.authenticate('jwt', {session: false}),
+  checkRoles('admin','customer'),
   async (req, res, next) => {
     try {
-      const user = req.user;
       const { nombreSensor } = req.params;
-      const components = await service.myHistorialUser(user.sub, nombreSensor);
+      const components = await service.myHistorialUser(nombreSensor);
       res.json(components);
     } catch (error) {
       next(error);

@@ -4,6 +4,9 @@ const boom = require('@hapi/boom');
 const UserService = require('./user.service');
 const service = new UserService();
 
+const HistorialService = require('./historial.service');
+const service2 = new HistorialService();
+
 const SectorService = require('./sector.service');
 const service1 = new SectorService();
 
@@ -57,19 +60,8 @@ class ComponentService {
     return components;
   }
 
-  async myHistorialUser(userId, nombreSensor){
-    const components = await models.Component.findAll({
-      where: {
-        userId: userId,
-        nombreComponente: nombreSensor
-      },
-      attributes: [],
-      include: [
-        {
-          association: 'items-historial',
-        }
-      ]
-    });
+  async myHistorialUser(nombreSensor){
+    const components = await service2.find(nombreSensor);
     return components;
   }
 

@@ -5,7 +5,6 @@ const authRouter = require('./auth.router');
 const componentRouter = require('./component.router');
 const sectorRouter = require('./sector.router');
 const sensorRouter = require('./sensor.router');
-const historialRouter = require('./historial.router');
 const profileRouter= require('./profile.router');
 
 function routerApi(app) {
@@ -16,7 +15,6 @@ function routerApi(app) {
   router.use('/component',componentRouter);
   router.use('/sector', sectorRouter);
   router.use('/sensor', sensorRouter);
-  router.use('/historial', historialRouter);
   router.use('/profile', profileRouter);
 }
 

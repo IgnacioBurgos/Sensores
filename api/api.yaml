@@ -23,6 +23,7 @@ tags:
 - name: sector
   description: end points para el CRUD de un sector que contendrá componentes,  solo accesible para ADMINISTRADOR
 
+
 schemes:
 - https
 paths:
