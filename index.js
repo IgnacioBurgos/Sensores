@@ -28,6 +28,7 @@ const { logErrors, errorHandler, boomErrorHandler, ormErrorHandler } = require('
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.set("view engine", "ejs");
 app.use(express.json());
 
 const whitelist = ['http://localhost:3000', 'https://sensoresapi.herokuapp.com'];
